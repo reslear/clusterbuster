@@ -25,7 +25,7 @@ TileServer({
     }
     return whereStatements;
   },
-}).then(server => {
+}).then((server) => {
   const app = express();
   app.use((_, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
@@ -48,7 +48,7 @@ TileServer({
       geometry,
       id: req.id,
     })
-      .then(result => {
+      .then((result) => {
         res.setHeader('Content-Type', 'application/x-protobuf');
         res.setHeader('Content-Encoding', 'gzip');
         console.time('send' + req.id);
@@ -56,9 +56,11 @@ TileServer({
         console.timeEnd('send' + req.id);
         console.timeEnd(req.id);
       })
-      .catch(e => {
+      .catch((e) => {
         res.status(400).send('Oops');
       });
   });
-  app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+  app.listen(port, () =>
+    console.log(`Example app listening on port http://localhost:${port}`)
+  );
 });

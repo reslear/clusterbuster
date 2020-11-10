@@ -7,9 +7,9 @@
       name="viewport"
       content="initial-scale=1,maximum-scale=1,user-scalable=no"
     />
-    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.js"></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js"></script>
     <link
-      href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.css"
+      href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css"
       rel="stylesheet"
     />
     <style>
@@ -23,26 +23,62 @@
         bottom: 0;
         width: 100%;
       }
+
+      .map-overlay {
+        position: absolute;
+        width: 25%;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+        background-color: #fff;
+        max-height: 100%;
+        overflow: hidden;
+      }
+
+      label {
+        cursor: pointer;
+      }
     </style>
   </head>
+
   <body>
     <div id="map"></div>
+
+    <div class="map-overlay">
+      <div>
+        <div><h1>Speed</h1></div>
+
+        <div>
+          <label>
+            <input type="checkbox" name="speed" value="fast" /> Speed
+          </label>
+        </div>
+
+        <div>
+          <label
+            ><input type="checkbox" name="speed" value="turbo" /> Turbo</label
+          >
+        </div>
+      </div>
+    </div>
+
     <script>
       mapboxgl.accessToken =
-        '<your access token here>';
+        'pk.eyJ1IjoiaG9vbG9rbyIsImEiOiJja2hjZGUwbDgwMjM1MnFtMHZ6cmVxZmlnIn0.kUJgLf2zFIFIqAwY8-73CQ';
       var map = new mapboxgl.Map({
         container: 'map',
         style: 'mapbox://styles/mapbox/light-v10',
-        zoom: 7,
-        center: [3.4, 52.2],
+        zoom: 4,
+        center: [5.9511792677838, 59.29614383405024],
       });
 
-      map.on('load', function() {
-        // Change the source to filter
+      map.on('load', () => {
         map.addSource('points', {
           type: 'vector',
           tiles: ['http://localhost:3005/points/{z}/{x}/{y}/tile.mvt'],
         });
+
         map.addLayer({
           id: 'clusters',
           type: 'circle',
@@ -51,9 +87,8 @@
           interactive: true,
           filter: ['>', ['get', 'count'], 1],
           paint: {
-            'circle-radius': 20
-          }
-          
+            'circle-radius': 20,
+          },
         });
 
         map.addLayer({
@@ -61,6 +96,7 @@
           type: 'symbol',
           source: 'points',
           'source-layer': `points`,
+
           interactive: true,
           filter: ['>', ['get', 'count'], 1],
 
@@ -68,6 +104,7 @@
             'text-field': ['get', 'count'],
             'text-size': 12,
           },
+
           paint: {
             'text-color': '#ffffff',
           },
@@ -79,6 +116,7 @@
           source: 'points',
           'source-layer': `points`,
           filter: ['==', ['get', 'count'], 1],
+          //'icon-allow-overlap': true,
           paint: {
             'circle-color': '#11b4da',
             'circle-radius': 4,
@@ -87,12 +125,48 @@
           },
         });
 
-        map.on('click', function({ point, target }) {
-          const features = target.queryRenderedFeatures(point, { layers: ['clusters', 'cluster_count', 'unclustered-point']});
+        map.on('click', function ({ point, target }) {
+          const features = target.queryRenderedFeatures(point, {
+            layers: ['clusters', 'cluster_count', 'unclustered-point'],
+          });
+
           if (features && features.length > 0) {
-            map.flyTo({center: [features[0].properties.lng, features[0].properties.lat]})
+            map.flyTo({
+              center: [features[0].properties.lng, features[0].properties.lat],
+            });
           }
         });
+      });
+
+      const inputChange = (event) => {
+        const inps = document.querySelectorAll('input[name="speed"]:checked');
+        const values = [...inps].map((item) => item.value);
+
+        var filters = [['in', ['get', 'speed'], ['literal', values]]];
+
+        console.log(values, filters);
+
+        map.setFilter('unclustered-point', [
+          'all',
+          ['==', ['get', 'count'], 1],
+          ...filters,
+        ]);
+        map.setFilter('clusters', [
+          'all',
+          ['>', ['get', 'count'], 1],
+          //...filters,
+        ]);
+        map.setFilter('cluster_count', [
+          'all',
+          ['>', ['get', 'count'], 1],
+          //...filters,
+        ]);
+      };
+
+      const speedInputs = document.querySelectorAll('input[name="speed"]');
+
+      speedInputs.forEach((input) => {
+        input.addEventListener('change', inputChange);
       });
     </script>
   </body>
