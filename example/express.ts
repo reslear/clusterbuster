@@ -3,6 +3,8 @@ require('dotenv').config();
 const express = require('express');
 const uuid = require('uuid');
 
+const qs = require('qs');
+
 const port = 3005;
 
 const table = 'public.points';
@@ -13,7 +15,7 @@ const { TileServer } = require('../dist');
 TileServer({
   maxZoomLevel,
   attributes: ['status', 'speed'],
-  debug: true,
+  debug: false,
   filtersToWhere: (filters = { status: undefined, speed: undefined }) => {
     // You are responsible for protecting against SQL injection in this function. Because there are many ways to filter, it depends on the filter type on how to approach this.
 
@@ -30,7 +32,15 @@ TileServer({
     return whereStatements;
   },
 }).then((server) => {
-  const app = express();
+  const app = express().disable('x-powered-by');
+
+  // set query
+  app.set('query parser', (string) => qs.parse(string, { comma: true }));
+
+  // to support JSON-encoded bodies
+  app.use(express.urlencoded({ extended: true }));
+  app.use(express.json());
+
   app.use((_, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     next();
