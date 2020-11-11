@@ -1191,6 +1191,11 @@
   "resolved" "https://registry.npmjs.org/@types/events/-/events-3.0.0.tgz"
   "version" "3.0.0"
 
+"@types/geojson@*":
+  "integrity" "sha512-wE2v81i4C4Ol09RtsWFAqg3BUitWbHSpSlIo+bNdsCJijO9sjme+zm+73ZMCa/qMC8UEERxzGbvmr1cffo2SiQ=="
+  "resolved" "https://registry.npmjs.org/@types/geojson/-/geojson-7946.0.7.tgz"
+  "version" "7946.0.7"
+
 "@types/glob@^7.1.1":
   "integrity" "sha512-1Bh06cbWJUHMC97acuD6UMG29nMt0Aqz1vF3guLfG+kHHJhy3AyohZFFxYk2f7Q1SQIrNwvncxAE0N/9s70F2w=="
   "resolved" "https://registry.npmjs.org/@types/glob/-/glob-7.1.1.tgz"
@@ -1231,6 +1236,13 @@
   "integrity" "sha512-ve2IoUJClE+4S/sG2zoLGEHP6DCvqgyz7UkHZdiICdQaAYRaCXsRWfJlbL8B0KvUyo9lgzD+oR0YSy4YikFyFQ=="
   "resolved" "https://registry.npmjs.org/@types/lru-cache/-/lru-cache-4.1.2.tgz"
   "version" "4.1.2"
+
+"@types/mapbox-gl@^1.12.7":
+  "integrity" "sha512-4/d4a16kEXBH4GoSRqpbpEJJoeEb+YXdd69E5ZMT45k6un7cjUn6lKWYNrJgsKEaSl7vkPuCOFk6DWOLxlzQ7A=="
+  "resolved" "https://registry.npmjs.org/@types/mapbox-gl/-/mapbox-gl-1.12.7.tgz"
+  "version" "1.12.7"
+  dependencies:
+    "@types/geojson" "*"
 
 "@types/minimatch@*":
   "integrity" "sha512-tHq6qdbT9U1IRSGf14CL0pUlULksvY9OZ+5eEgl1N7t+OA3tGvNpxJCzuKQlsNgCVwbAs670L1vcVQi8j9HjnA=="

@@ -65,5 +65,8 @@
         }
       ]
     ]
+  },
+  "dependencies": {
+    "@types/mapbox-gl": "^1.12.7"
   }
 }

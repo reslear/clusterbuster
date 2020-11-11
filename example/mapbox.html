@@ -73,12 +73,7 @@
         center: [5.9511792677838, 59.29614383405024],
       });
 
-      map.on('load', () => {
-        map.addSource('points', {
-          type: 'vector',
-          tiles: ['http://localhost:3005/points/{z}/{x}/{y}/tile.mvt'],
-        });
-
+      const addLayers = (queryParams = {}) => {
         map.addLayer({
           id: 'clusters',
           type: 'circle',
@@ -92,7 +87,7 @@
         });
 
         map.addLayer({
-          id: 'cluster_count',
+          id: 'cluster-count',
           type: 'symbol',
           source: 'points',
           'source-layer': `points`,
@@ -124,10 +119,30 @@
             'circle-stroke-color': '#fff',
           },
         });
+      };
+
+      const updateSource = (queryParams) => {
+        const usp = new URLSearchParams(queryParams);
+        const url = `http://localhost:3005/points/{z}/{x}/{y}/tile.mvt?${usp.toString()}`;
+
+        if (map.getSource('points')) {
+          map.getSource('points').setTiles([url]);
+        } else {
+          map.addSource('points', {
+            type: 'vector',
+            tiles: [url],
+          });
+
+          addLayers();
+        }
+      };
+
+      map.on('load', () => {
+        updateSource();
 
         map.on('click', function ({ point, target }) {
           const features = target.queryRenderedFeatures(point, {
-            layers: ['clusters', 'cluster_count', 'unclustered-point'],
+            layers: ['clusters', 'cluster-count', 'unclustered-point'],
           });
 
           if (features && features.length > 0) {
@@ -139,28 +154,10 @@
       });
 
       const inputChange = (event) => {
-        const inps = document.querySelectorAll('input[name="speed"]:checked');
-        const values = [...inps].map((item) => item.value);
+        const inputs = document.querySelectorAll('input[name="speed"]:checked');
+        const values = [...inputs].map((item) => item.value);
 
-        var filters = [['in', ['get', 'speed'], ['literal', values]]];
-
-        console.log(values, filters);
-
-        map.setFilter('unclustered-point', [
-          'all',
-          ['==', ['get', 'count'], 1],
-          ...filters,
-        ]);
-        map.setFilter('clusters', [
-          'all',
-          ['>', ['get', 'count'], 1],
-          //...filters,
-        ]);
-        map.setFilter('cluster_count', [
-          'all',
-          ['>', ['get', 'count'], 1],
-          //...filters,
-        ]);
+        updateSource({ speed: values });
       };
 
       const speedInputs = document.querySelectorAll('input[name="speed"]');
